@@ -1,1 +1,4 @@
 **/data/
+*.tar.gz
+*.pth
+*.pt
