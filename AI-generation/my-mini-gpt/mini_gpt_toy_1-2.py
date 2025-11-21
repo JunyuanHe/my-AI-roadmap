@@ -1,5 +1,5 @@
 """
-Optimized in terms of code style. 
+A toy GPT trained on tiny-shakespeare. Used a very basic transformer.
 """
 
 import torch
@@ -7,6 +7,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 from typing import Optional, Tuple
+from datasets import load_dataset
+import tiktoken
 
 # -----------------------------
 # 1. Configuration / Hyperparams
@@ -15,10 +17,10 @@ class GPTConfig:
     def __init__(
         self,
         vocab_size: int = 1000,
-        seq_len: int = 32,
+        seq_len: int = 64,
         d_model: int = 128,
         n_heads: int = 4,
-        n_layers: int = 4,
+        n_layers: int = 8,
         dropout: float = 0.1,
         device: Optional[torch.device] = None,
     ):
@@ -171,42 +173,63 @@ class MiniGPT(nn.Module):
             next_token = torch.multinomial(probs, num_samples=1)  # (B,1)
             idx = torch.cat((idx, next_token), dim=1)  # (B, T+1)
         return idx
+    
+
+
+
 
 # -----------------------------
 # 4. Data & Training Loop (toy)
 # -----------------------------
-def random_data(num_samples: int, config: GPTConfig):
-    data = torch.randint(0, config.vocab_size, (num_samples, config.seq_len + 1))
-    return data[:, :-1], data[:, 1:]
+
+
+
+def get_batch(data, batch_size, seq_len, config: GPTConfig):
+    ix = torch.randint(0, len(data) - seq_len - 1, (batch_size,))
+    x = torch.stack([data[i:i+seq_len] for i in ix])
+    y = torch.stack([data[i+1:i+seq_len+1] for i in ix])
+    return x.to(config.device), y.to(config.device)
+
 
 def train_toy():
     config = GPTConfig()
     device = config.device
-    train_x, train_y = random_data(1000, config)
-    train_x = train_x.to(device)
-    train_y = train_y.to(device)
+    # ds = load_dataset("roneneldan/TinyStories")
+    ds = load_dataset("pierre-pessarossi/tiny_shakespeare_dialogue")
+    text = "\n".join(ds["train"]["text"])
+    # Tokenizer
+    enc = tiktoken.get_encoding("gpt2")
+    token_ids = torch.tensor(enc.encode(text), dtype=torch.long)
+    config.vocab_size = enc.max_token_value + 1
     
     model = MiniGPT(config).to(device)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=5e-4)
+
     
-    steps = 200
-    batch_size = 16
+    steps = 2000
+    batch_size = 32
+    seq_len = config.seq_len
     for step in range(steps):
-        ix = torch.randint(0, train_x.size(0), (batch_size,), device=device)
-        xb = train_x[ix]
-        yb = train_y[ix]
+        xb, yb = get_batch(token_ids, batch_size, seq_len, config)
         logits, loss = model(xb, yb)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        if step % 20 == 0:
+        if step % 10 == 0:
             print(f"Step {step}: loss = {loss.item():.4f}")
     
     # generation demo
-    context = torch.randint(0, config.vocab_size, (1, 8), device=device)
-    print("Input:", context.tolist())
-    out = model.generate(context, max_new_tokens=20, temperature=1.0, top_k=5)
-    print("Generated:", out.tolist())
+    context_text = "ROMEO:"
+    context_ids = torch.tensor(enc.encode(context_text), dtype=torch.long)[None, :].to(device)
+
+    print("\n=== Generation ===")
+    print("Input:", context_text)
+
+    out = model.generate(context_ids, max_new_tokens=200)
+    generated_text = enc.decode(out[0].tolist())
+
+    print("\nGenerated text:\n")
+    print(generated_text)
 
 if __name__ == "__main__":
     train_toy()
