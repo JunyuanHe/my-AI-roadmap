@@ -16,7 +16,7 @@ from torchsummary import summary
 tokenizer = Tokenizer("AI-generation/my-mini-gpt/mini-gpt-3-RoPE/tokenizer")  # Make sure this points to the directory with tokenizer files
 
 # Load dataset and tokenize
-ds = load_dataset("roneneldan/TinyStories", split="train[:100%]")
+ds = load_dataset("roneneldan/TinyStories", split="train[:10%]")
 text = "\n".join(ds["text"])
 
 # Convert the text to token IDs using the tokenizer

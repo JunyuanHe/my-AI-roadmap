@@ -7,10 +7,15 @@ class GPTConfig:
         self,
         vocab_size: int = 1000,
         seq_len: int = 256,
-        d_model: int = 128,
-        n_heads: int = 4,
-        n_layers: int = 6,
+        d_model: int = 384,
+        n_heads: int = 6,
+        n_layers: int = 8,
         dropout: float = 0.1,
+        max_steps = 10000,
+        warmup_steps = 300,
+        max_lr = 4e-4,
+        min_lr = 4e-5,
+        grad_clip = 1.0,
         device: Optional[torch.device] = None,
     ):
         assert d_model % n_heads == 0
@@ -20,4 +25,9 @@ class GPTConfig:
         self.n_heads = n_heads
         self.n_layers = n_layers
         self.dropout = dropout
+        self.max_steps = max_steps
+        self.warmup_steps = warmup_steps
+        self.max_lr = max_lr
+        self.min_lr = min_lr
+        self.grad_clip = grad_clip
         self.device = device if device is not None else (torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"))

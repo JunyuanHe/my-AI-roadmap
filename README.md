@@ -6,4 +6,11 @@ title: My AI roadmap
 
 ## DL
 
-- [ ] MLP
+- [x] MLP
+- [x] CNN
+- [x] RNN
+
+## LM
+
+- [x] mini-gpt
+- [ ] small-gpt
