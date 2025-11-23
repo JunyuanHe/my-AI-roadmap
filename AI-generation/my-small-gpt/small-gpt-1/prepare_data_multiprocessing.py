@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
     # Multiprocessing settings
     batch_size = 2048      # batch_size larger is faster（2k ~ 10k 都可以）
-    num_proc = 4 # use all CPU
+    num_proc = 8 # use all CPU
 
     # -----------------------------
     # 加载 tokenizer
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     # -----------------------------
     # 加载数据集
     # -----------------------------
-    ds = load_dataset("roneneldan/TinyStories", split="train[:50%]")
+    ds = load_dataset("roneneldan/TinyStories", split="train[:100%]+validation[:100%]")
     texts = ds["text"]
     total = len(texts)
     print(f"Loaded {total} texts")

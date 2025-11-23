@@ -3,6 +3,9 @@ from typing import Optional, Tuple
 
 
 class GPTConfig:
+    
+
+
     def __init__(
         self,
         vocab_size: int = 1000,
@@ -11,11 +14,13 @@ class GPTConfig:
         n_heads: int = 6,
         n_layers: int = 8,
         dropout: float = 0.1,
-        max_steps = 10000,
+        max_steps = 20001,
         warmup_steps = 300,
         max_lr = 4e-4,
         min_lr = 4e-5,
         grad_clip = 1.0,
+        model_dir = "AI-generation/my-small-gpt/small-gpt-1/model",
+        data_dir = "AI-generation/my-small-gpt/small-gpt-1/data",
         device: Optional[torch.device] = None,
     ):
         assert d_model % n_heads == 0
@@ -30,4 +35,6 @@ class GPTConfig:
         self.max_lr = max_lr
         self.min_lr = min_lr
         self.grad_clip = grad_clip
+        self.model_dir = model_dir
+        self.data_dir = data_dir
         self.device = device if device is not None else (torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"))

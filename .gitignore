@@ -2,3 +2,6 @@
 *.tar.gz
 *.pth
 *.pt
+*.zip
+*.rar
+*.7z
