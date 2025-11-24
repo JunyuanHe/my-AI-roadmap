@@ -14,7 +14,7 @@ def batch_iterator(batch_size=1000):
         yield batch["text"]
 
 tokenizer = Tokenizer(models.BPE())
-tokenizer.pre_tokenizers = pre_tokenizers.ByteLevel()
+tokenizer.pre_tokenizer = pre_tokenizers.ByteLevel()
 
 trainer = trainers.BpeTrainer(
     vocab_size=1000,

@@ -19,7 +19,8 @@ import numpy as np
 # Tokenize
 
 # Load the trained tokenizer
-tokenizer_pth = "AI-generation/my-small-gpt/small-gpt-1/tokenizer/my-bpe-tokenizer.json"
+tokenizer_pth = "AI-generation/my-small-gpt/small-gpt-1/tokenizer/my-bpe-tokenizer-simplebooks.json"
+# tokenizer_pth = "AI-generation/my-small-gpt/small-gpt-1/tokenizer/my-bpe-tokenizer.json"
 tokenizer = MyTokenizer(tokenizer_pth)  # Make sure this points to the directory with tokenizer files
 config = GPTConfig(vocab_size=tokenizer.vocab_size)
 
@@ -27,10 +28,10 @@ config = GPTConfig(vocab_size=tokenizer.vocab_size)
 os.makedirs(config.model_dir, exist_ok=True)
 
 # Load dataset
-# ds = load_dataset("roneneldan/TinyStories", split="train[:100%]")
-# text = "\n".join(ds["text"])
-train_path = os.path.join(config.data_dir, "train.bin")
-val_path = os.path.join(config.data_dir, "val.bin")
+train_path = os.path.join(config.data_dir, "train-simplebooks.bin")
+val_path = os.path.join(config.data_dir, "val-simplebooks.bin")
+# train_path = os.path.join(config.data_dir, "train.bin")
+# val_path = os.path.join(config.data_dir, "val.bin")
 token_ids = np.memmap(train_path, dtype=np.uint16, mode='r')
 val_ids = np.memmap(val_path, dtype=np.uint16, mode='r')
 
@@ -66,17 +67,17 @@ model = MiniGPT(config).to(device)
 optimizer = torch.optim.AdamW(model.parameters(), lr=config.max_lr, betas=(0.9, 0.95))
 
 # scheduler
-scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-    optimizer, 
-    T_max=config.max_lr,
-    eta_min=config.min_lr
-)
-# scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
-#     optimizer,
-#     T_0=500,       # number of steps in the first restart
-#     T_mult=1,      # multiply T_i by this after each restart
-#     eta_min=config.min_lr # minimum learning rate
+# scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+#     optimizer, 
+#     T_max=config.max_steps - config.warmup_steps,
+#     eta_min=config.min_lr
 # )
+scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
+    optimizer,
+    T_0=500,       # number of steps in the first restart
+    T_mult=2,      # multiply T_i by this after each restart
+    eta_min=config.min_lr # minimum learning rate
+)
 
 # scheduler = LambdaLR(optimizer, lr_lambda)
 
@@ -112,9 +113,10 @@ for step in range(steps):
     train_loss_log.append(float(loss.item()))
 
     if step % 100 == 0:
+        current_lr = optimizer.param_groups[0]['lr']
         val_loss = estimate_loss(model, val_ids, batch_size, seq_len, config, eval_iters=20)
         val_loss_log.append(float(val_loss))
-        print(f"Step {step} | loss = {loss.item():.4f} | val_loss = {val_loss:.4f}")
+        print(f"Step {step} | LR = {current_lr:.6f} | loss = {loss.item():.4f} | val_loss = {val_loss:.4f}")
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
