@@ -23,8 +23,10 @@ if __name__ == '__main__':
     # -----------------------------
     # 配置
     # -----------------------------
-    tokenizer_path = "AI-generation/my-small-gpt/small-gpt-1/tokenizer/my-bpe-tokenizer-simplebooks.json"
-    data_dir = "AI-generation/my-small-gpt/data/simplebooks/simplebooks-92-raw"
+    # tokenizer_path = "AI-generation/my-small-gpt/small-gpt-1/tokenizer/my-bpe-tokenizer-simplebooks.json"
+    # data_dir = "AI-generation/my-small-gpt/data/simplebooks/simplebooks-92-raw"
+    tokenizer_path = "AI-generation/my-small-gpt/small-gpt-1/tokenizer/my-bpe-tokenizer-tinystoriesv2.json"
+    data_dir = "AI-generation/my-small-gpt/data/tiny-stories-v2"
     output_dir = "AI-generation/my-small-gpt/small-gpt-1/data"
 
     os.makedirs(output_dir, exist_ok=True)
@@ -40,8 +42,11 @@ if __name__ == '__main__':
             text = f.read()
         return text
 
-    train_text = read_text_file(os.path.join(data_dir, "train.txt"))
-    val_text   = read_text_file(os.path.join(data_dir, "valid.txt"))
+    # train_text = read_text_file(os.path.join(data_dir, "train.txt"))
+    # val_text   = read_text_file(os.path.join(data_dir, "valid.txt"))
+    train_text = read_text_file(os.path.join(data_dir, "TinyStoriesV2-GPT4-train.txt"))
+    val_text   = read_text_file(os.path.join(data_dir, "TinyStoriesV2-GPT4-valid.txt"))
+
 
     print(f"Train text length: {len(train_text)} chars")
     print(f"Val text length: {len(val_text)} chars")

@@ -13,13 +13,15 @@ from utils import get_batch
 from torchsummary import summary
 import numpy as np
 
+torch.set_float32_matmul_precision("high")
 
 
 
 # Tokenize
 
 # Load the trained tokenizer
-tokenizer_pth = "AI-generation/my-small-gpt/small-gpt-1/tokenizer/my-bpe-tokenizer-simplebooks.json"
+tokenizer_pth = "AI-generation/my-small-gpt/small-gpt-1/tokenizer/my-bpe-tokenizer-tinystoriesv2.json"
+# tokenizer_pth = "AI-generation/my-small-gpt/small-gpt-1/tokenizer/my-bpe-tokenizer-simplebooks.json"
 # tokenizer_pth = "AI-generation/my-small-gpt/small-gpt-1/tokenizer/my-bpe-tokenizer.json"
 tokenizer = MyTokenizer(tokenizer_pth)  # Make sure this points to the directory with tokenizer files
 config = GPTConfig(vocab_size=tokenizer.vocab_size)
@@ -67,19 +69,20 @@ model = MiniGPT(config).to(device)
 optimizer = torch.optim.AdamW(model.parameters(), lr=config.max_lr, betas=(0.9, 0.95))
 
 # scheduler
-# scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-#     optimizer, 
-#     T_max=config.max_steps - config.warmup_steps,
-#     eta_min=config.min_lr
-# )
-scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
-    optimizer,
-    T_0=500,       # number of steps in the first restart
-    T_mult=2,      # multiply T_i by this after each restart
-    eta_min=config.min_lr # minimum learning rate
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+    optimizer, 
+    T_max=config.max_steps - config.warmup_steps,
+    eta_min=config.min_lr
 )
+# scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
+#     optimizer,
+#     T_0=500,       # number of steps in the first restart
+#     T_mult=2,      # multiply T_i by this after each restart
+#     eta_min=config.min_lr # minimum learning rate
+# )
 
 # scheduler = LambdaLR(optimizer, lr_lambda)
+
 
 
 steps = config.max_steps
@@ -87,6 +90,10 @@ batch_size = 64
 seq_len = config.seq_len
 
 summary(model, input_size=(seq_len,))  # Only specify (seq_len,) here
+
+# Compile model
+model = torch.compile(model) # requires PyTorch 2.0
+
 
 train_loss_log = []
 val_loss_log = []
@@ -124,7 +131,7 @@ for step in range(steps):
             # torch.save(model.state_dict(), save_path)
             torch.save({
                 'step': step,
-                'model_state_dict': model.state_dict(),
+                'model_state_dict': model._orig_mod.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
             }, save_path)
             print(f"\tBest model saved at step {step}, val_loss={val_loss:.4f}")
@@ -136,7 +143,7 @@ save_path = os.path.join(config.model_dir, "small_gpt_1_last.pth")
 
 torch.save({
     'step': steps,
-    'model_state_dict': model.state_dict(),
+    'model_state_dict': model._orig_mod.state_dict(),
     'optimizer_state_dict': optimizer.state_dict(),
 }, save_path)
 print(f"Last model saved.")
