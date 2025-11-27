@@ -73,7 +73,7 @@ def load_texts_from_file(filepath):
 dataset = Dataset.from_dict({"text": texts})
 
 # Train tokenizer
-vocab_size = 1000
+vocab_size = 500
 tokenizer = build_tokenizer(texts, vocab_size=vocab_size)
 print(tokenizer.get_vocab())
 
@@ -111,7 +111,7 @@ class MiniTransformerBlock(nn.Module):
         # 前馈全连接层
         self.ff = nn.Sequential(
             nn.Linear(embed_dim, ff_hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(ff_hidden_dim, embed_dim)
         )
         # 层归一化
@@ -168,25 +168,25 @@ class MiniTransformer(nn.Module):
 #  Training
 # =======================
 
-seq_len = 32
+seq_len = 16
 device = torch.device("cuda" if torch.cuda.is_available() else "mps" if getattr(torch, "has_mps", False) and torch.backends.mps.is_available() else "cpu")
 
 
 model = MiniTransformer(
     vocab_size=tokenizer.get_vocab_size(),
-    embed_dim=128,
-    num_heads=4,
-    ff_hidden_dim=64,
+    embed_dim=64,
+    num_heads=2,
+    ff_hidden_dim=32,
     num_layers=4,
     max_seq_len=seq_len
 )
 model = model.to(device)
 
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+optimizer = torch.optim.AdamW(model.parameters(), lr=4e-4)
 criterion = torch.nn.CrossEntropyLoss()
 
-steps = 100
-batch_size = 128
+steps = 300
+batch_size = 512
 model.train()
 for step in range(steps):
     xb, yb = get_batch(encoded_dataset, batch_size, seq_len, device=device)
@@ -250,6 +250,6 @@ def generate(model, tokenizer, start_text="", max_new_tokens=20, device="cpu"):
 # =======================
 model.eval()
 prompt = "neural"
-generated_text = generate(model, tokenizer, start_text=prompt, max_new_tokens=20, device=device)
+generated_text = generate(model, tokenizer, start_text=prompt, max_new_tokens=8, device=device)
 print("Prompt:", prompt)
 print("Generated:", generated_text)
