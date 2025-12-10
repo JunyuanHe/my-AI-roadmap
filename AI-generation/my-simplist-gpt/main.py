@@ -160,8 +160,8 @@ class MiniTransformer(nn.Module):
         for layer in self.layers:
             x = layer(x)
 
-        out = self.head(x)  # shape: (seq_len, batch_size, embed_dim)
-        out = out.transpose(0, 1)  # (batch_size, seq_len, embid_dim)
+        out = self.head(x)  # shape: (seq_len, batch_size, vocab_size)
+        out = out.transpose(0, 1)  # (batch_size, seq_len, vocab_size)
         return out
     
 # =======================
