@@ -1,10 +1,16 @@
-# Step-by-Step Tasks
+---
+title: Step-by-Step Tasks
+---
+
+<!-- # Step-by-Step Tasks -->
+
+
 
 Think of these as **guided nudges**, not exams. Each task has a single intellectual target.
 
 
 
-## Step 00 — Bigram Model
+## Step 00 - Bigram Model
 
 **Concept:** next-token prediction without context
 
@@ -30,7 +36,7 @@ Think of these as **guided nudges**, not exams. Each task has a single intellect
 
 
 
-## Step 01 — Tokenizer
+## Step 01 - Tokenizer
 
 **Concept:** text → discrete symbols
 
@@ -55,7 +61,7 @@ Think of these as **guided nudges**, not exams. Each task has a single intellect
 
 
 
-## Step 02 — Dataset Construction
+## Step 02 - Dataset Construction
 
 **Concept:** self-supervision via shifting
 
@@ -80,7 +86,7 @@ Think of these as **guided nudges**, not exams. Each task has a single intellect
 
 
 
-## Step 03 — Embeddings
+## Step 03 - Embeddings
 
 **Concept:** tokens are vectors, not numbers
 
@@ -104,7 +110,7 @@ Think of these as **guided nudges**, not exams. Each task has a single intellect
 
 
 
-## Step 04 — MLP Language Model
+## Step 04 - MLP Language Model
 
 **Concept:** depth without interaction
 
@@ -121,12 +127,12 @@ Think of these as **guided nudges**, not exams. Each task has a single intellect
 
 ### Intended realization
 
-> Depth ≠ context.
+> Depth $\neq$ context.
 
 
 
 
-## Step 05 — Self-Attention (Single Head)
+## Step 05 - Self-Attention (Single Head)
 
 **Concept:** tokens can communicate
 
@@ -151,7 +157,7 @@ Think of these as **guided nudges**, not exams. Each task has a single intellect
 
 
 
-## Step 06 — Multi-Head Attention
+## Step 06 - Multi-Head Attention
 
 **Concept:** parallel subspaces
 
@@ -172,7 +178,7 @@ Think of these as **guided nudges**, not exams. Each task has a single intellect
 
 
 
-## Step 07 — Transformer Block
+## Step 07 - Transformer Block
 
 **Concept:** residual pathways and normalization
 
@@ -193,7 +199,7 @@ Think of these as **guided nudges**, not exams. Each task has a single intellect
 
 
 
-## Step 08 — Full Transformer
+## Step 08 - Full Transformer
 
 **Concept:** depth via stacking
 
@@ -214,7 +220,7 @@ Think of these as **guided nudges**, not exams. Each task has a single intellect
 
 
 
-## Step 09 — Training
+## Step 09 - Training
 
 **Concept:** optimization as part of modeling
 
@@ -235,7 +241,7 @@ Think of these as **guided nudges**, not exams. Each task has a single intellect
 
 
 
-## Step 10 — Generation
+## Step 10 - Generation
 
 **Concept:** model as an autoregressive process
 
@@ -265,5 +271,3 @@ After Step 10, let us:
 No code. Just arrows.
 
 Anyone who can do that has genuinely learned transformers.
-
----
