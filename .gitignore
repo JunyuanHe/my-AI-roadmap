@@ -5,4 +5,15 @@
 *.zip
 *.rar
 *.7z
+*.wav
+
+
+# Ignore files containing sensitive information
 replacements.txt
+.env
+.comet.config
+*.pem
+secrets.json
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
