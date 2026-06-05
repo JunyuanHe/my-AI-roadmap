@@ -9,6 +9,7 @@ dependencies = [
     "numpy>=2.4.6",
     "opencv-python>=4.13.0.92",
     "torch>=2.12.0",
+    "tyro>=1.0.13",
     "wandb>=0.27.0",
     "zarr>=3.2.1",
 ]
@@ -25,3 +26,13 @@ torchvision = [
 name = "pytorch-cu130"
 url = "https://download.pytorch.org/whl/cu130"
 explicit = true
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
